@@ -2,21 +2,29 @@ NAME = ircserv
 
 CC = c++
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
+FLAGS = -std=c++98 -g -MMD -Werror -Wextra -Wall 
 
-SRCS = main.cpp Server.cpp
+SRC = main.cpp Server.cpp Client.cpp Channel.cpp
 
-OBJS = $(SRCS:.cpp=.o)
+OBJ = $(SRC:.cpp=.o)
+DEP = $(SRC:.cpp=.d)
 
 all: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+$(NAME): $(OBJ)
+	$(CC) $(FLAGS) -o $@ $^
+
+-include $(DEP)
+
+%.o: %.cpp
+	$(CC) $(FLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	rm -rf $(OBJ) $(DEP)
 
 fclean: clean
-	rm -f $(NAME)
+	rm -rf $(NAME)
 
 re: fclean all
+
+.PHONY: clean fclean all re
